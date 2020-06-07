@@ -1,0 +1,32 @@
+version: '3.3'
+networks:
+  shared:
+    external:
+      name: shared
+
+services:
+  localstack:
+    container_name: payment_applications-localstack
+    image: localstack/localstack
+    ports:
+      - '4567-4584:4567-4584'
+      - 8055:8080
+    volumes:
+      - ./localstack:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - shared
+    environment:
+      - SERVICES=dynamodb:4569
+      - DATA_DIR=/tmp/localstack/data
+      - DEFAULT_REGION=ap-southeast-1
+
+
+  redis:
+    networks:
+      - shared
+    image: redis
+    container_name: paymentapplication-redis
+    ports:
+      - 6380:6379
+    restart: always
